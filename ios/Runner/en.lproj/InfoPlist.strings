@@ -1,0 +1,9 @@
+/* 
+  InfoPlist.strings
+  Runner
+
+  Created by rainvisitor on 2020/2/18.
+  Copyright © 2020 The Chromium Authors. All rights reserved.
+*/
+
+"CFBundleDisplayName" = "Mask Map";

@@ -1,0 +1,109 @@
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
+def flutterRoot = localProperties.getProperty('flutter.sdk')
+if (flutterRoot == null) {
+    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
+}
+
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
+if (flutterVersionCode == null) {
+    flutterVersionCode = '1'
+}
+
+def flutterVersionName = localProperties.getProperty('flutter.versionName')
+if (flutterVersionName == null) {
+    flutterVersionName = '1.0'
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
+
+android {
+    compileSdkVersion 28
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+
+    defaultConfig {
+        applicationId "studio.mosil.gdg.mask"
+        minSdkVersion 16
+        targetSdkVersion 28
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        develop
+        release
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
+        develop {
+            signingConfig signingConfigs.develop
+        }
+    }
+}
+
+flutter {
+    source '../..'
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test:runner:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+}
+
+apply plugin: 'io.fabric'
+apply plugin: 'com.google.gms.google-services'
+
+def ksFile = rootProject.file('develop.properties')
+def props = new Properties()
+if (ksFile.canRead()) {
+    props.load(new FileInputStream(ksFile))
+
+    if (props != null) {
+        android.signingConfigs.develop.storeFile file(props['storeFile'])
+        android.signingConfigs.develop.storePassword props['storePassword']
+        android.signingConfigs.develop.keyAlias props['keyAlias']
+        android.signingConfigs.develop.keyPassword props['keyPassword']
+    } else {
+        println 'some entries in \'keystore.properties\' not found!'
+    }
+} else {
+    println '\'keystore.properties\' not found!'
+}
+
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.canRead()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+    if (keystoreProperties != null) {
+        android.signingConfigs.release.storeFile file(keystoreProperties['storeFile'])
+        android.signingConfigs.release.storePassword keystoreProperties['storePassword']
+        android.signingConfigs.release.keyAlias keystoreProperties['keyAlias']
+        android.signingConfigs.release.keyPassword keystoreProperties['keyPassword']
+    } else {
+        println 'some entries in \'release keystore.properties\' not found!'
+    }
+} else {
+    println '\'release keystore.properties\' not found!'
+}
