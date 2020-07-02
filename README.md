@@ -1,6 +1,6 @@
 # 即時口罩地圖
 
-此專案採用 Flutter 開發
+此專案採用 Flutter v1.12.13 開發
 
 ## 採用技術
 - Firebase
